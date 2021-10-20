@@ -1,9 +1,8 @@
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 
 const port = 3000;
 const app = express();
-import bodyParser from 'body-parser';
 
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
