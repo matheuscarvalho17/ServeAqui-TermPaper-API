@@ -1,2 +1,2 @@
-# verbose-funicular
-  Trabalho de conclusão de Curso de Engenharia da Computação, by Matheus Carvalho
+# ServeAqui-API
+  Trabalho de conclusão de Curso de Engenharia da Computação, por Matheus Carvalho.
