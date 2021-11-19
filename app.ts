@@ -11,6 +11,6 @@ app.listen(port, () => {
   console.log(`Servidor backend está rodando.`);
 });
 
-app.get('/', (req, res) => {
-  res.send(`Rodando GET na porta ${port}.`);
+app.get('/port', (req, res) => {
+  res.send({ port: port });
 });
