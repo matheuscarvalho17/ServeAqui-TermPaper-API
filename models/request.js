@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Request.belongsTo(models.Order);
-      Request.hasOne(models.Products);
+      Request.belongsTo(models.Product);
     }
   }
   Request.init(
