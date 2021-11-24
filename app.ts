@@ -1,9 +1,11 @@
 import cors from 'cors';
 import models from './models';
 import express from 'express';
+import Sequelize from 'sequelize';
 
 const port = 3000;
 const app = express();
+const Op = Sequelize.Op;
 
 const user = models.User;
 const table = models.Table;
@@ -20,17 +22,10 @@ app.get('/', (req, res) => {
   res.send('Servidor rodando!');
 });
 
-//User
-// app.get('/ws/users/credential/create', async (req, res) => {
-//   await user.create({
-//     credential: '#81001110',
-//     password: 'P@ss1232',
-//     createdAt: new Date(),
-//     updatedAt: new Date(),
-//   });
-//   res.send({ warm: 'Credencial criado com sucesso!' });
-// });
+//
+//Users
 
+//Post to login
 app.post('/ws/users/login', async (req, res) => {
   const response = await user.findOne({
     where: { credential: req.body.credential, password: req.body.password },
@@ -43,6 +38,7 @@ app.post('/ws/users/login', async (req, res) => {
   }
 });
 
+//
 //Products
 
 //Get all products and products by type
@@ -60,22 +56,28 @@ app.get('/ws/products', async (req, res) => {
   res.send(response);
 });
 
+//Get products by name
+app.get('/ws/products/name', async (req, res) => {
+  let titleRequest = req.query;
+
+  const response = await product.findAll({
+    where:
+      titleRequest.title != null
+        ? {
+            title: {
+              [Op.like]: '%' + titleRequest.title + '%',
+            },
+          }
+        : {},
+  });
+  res.send(response);
+});
+
 //Get product by id
 app.get('/ws/product', async (req, res) => {
   let idRequest = req.query;
-  console.log('Procurando item id: ' + idRequest.id);
+
   const response = await product.findOne({
-    attributes: [
-      'id',
-      'type',
-      'price',
-      'title',
-      'amount',
-      'editable',
-      'image_url',
-      'description',
-      'ingredients',
-    ],
     where:
       idRequest.id != null
         ? {
@@ -86,6 +88,7 @@ app.get('/ws/product', async (req, res) => {
   res.send(response);
 });
 
+//
 //Tables
 
 //Get all tables by id
