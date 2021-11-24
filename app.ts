@@ -1,13 +1,16 @@
 import cors from 'cors';
-import express from 'express';
 import models from './models';
+import express from 'express';
 
 const port = 3000;
-const user = models.User;
-const product = models.Product;
 const app = express();
 
+const user = models.User;
+const table = models.Table;
+const product = models.Product;
+
 app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.listen(port, () => {
@@ -15,9 +18,6 @@ app.listen(port, () => {
 });
 app.get('/', (req, res) => {
   res.send('Servidor rodando!');
-});
-app.get('/port', (req, res) => {
-  res.send({ port: port });
 });
 
 //User
@@ -32,44 +32,76 @@ app.get('/port', (req, res) => {
 // });
 
 app.post('/ws/users/login', async (req, res) => {
-  let response = await user.findOne({
-    where: { credential: req.body.name, password: req.body.password },
+  const response = await user.findOne({
+    where: { credential: req.body.credential, password: req.body.password },
+    attributes: ['id'],
   });
   if (response === null) {
     res.send({ warm: 'Credencial inválida ou senha incorreta!' });
   } else {
-    res.send({ response: response });
+    res.send(response);
   }
 });
 
-app.get('/ws/user', async (req, res) => {
-  let read = await user.findAll({
-    raw: true,
-    where: {
-      credential: '#81001473',
-    },
-  });
-  res.send({ response: read });
-});
-
 //Products
+
+//Get all products and products by type
 app.get('/ws/products', async (req, res) => {
-  let read = await product.findAll({
-    raw: true,
+  let typeRequest = req.query;
+
+  const response = await product.findAll({
+    where:
+      typeRequest.type != null
+        ? {
+            type: typeRequest.type,
+          }
+        : {},
   });
-  res.send({ response: read });
+  res.send(response);
 });
 
-app.get('/ws/products/food', async (req, res) => {
-  let read = await product.findAll({
-    raw: true,
-    where: {
-      type: 'food',
-    },
+//Get product by id
+app.get('/ws/product', async (req, res) => {
+  let idRequest = req.query;
+  console.log('Procurando item id: ' + idRequest.id);
+  const response = await product.findOne({
+    attributes: [
+      'id',
+      'type',
+      'price',
+      'title',
+      'amount',
+      'editable',
+      'image_url',
+      'description',
+      'ingredients',
+    ],
+    where:
+      idRequest.id != null
+        ? {
+            id: idRequest.id,
+          }
+        : {},
   });
-  res.send({ response: read });
+  res.send(response);
 });
 
+//Tables
+
+//Get all tables by id
+app.get('/ws/tables', async (req, res) => {
+  const response = await table.findAll({
+    attributes: ['id', 'name', 'status', 'callWaiter'],
+  });
+  res.send(response);
+});
+
+//
+//
+//
+//
+//
+//
 // app.get('/update', async (req, res) => {
 //   let update = await user
 //     .findByPk(2, { include: [{ all: true }] })
