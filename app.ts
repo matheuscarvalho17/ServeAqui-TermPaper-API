@@ -104,6 +104,19 @@ app.get('/ws/product', async (req, res) => {
   res.send(response);
 });
 
+//Edit product amount by id
+app.put('/ws/product/update', async (req, res) => {
+  await product.update(
+    { amount: req.body.amount },
+    {
+      where: {
+        id: req.body.id,
+      },
+    },
+  );
+  res.send({ warm: 'Atualização realizada com sucesso!' });
+});
+
 //
 //Tables
 //
