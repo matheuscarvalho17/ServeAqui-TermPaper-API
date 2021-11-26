@@ -148,7 +148,7 @@ app.put('/ws/table/status', async (req, res) => {
     { status: req.body.status },
     {
       where: {
-        id: req.body.idTable,
+        id: req.body.id,
       },
     },
   );
